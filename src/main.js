@@ -10,13 +10,14 @@ import { loadStudy } from './data.js';
 import { icon, esc, routeName } from './ui.js';
 import { renderPage, pageInfo } from './pages.js';
 import { setMapData, setMapSelection, updateMap, mountMap, resizeMap, fitSelected, fitStudy, fitCentre } from './map.js';
+import { mountSpatialMap } from './spatial-map.js';
 
 const $=id=>document.getElementById(id);
 const state={page:'dashboard',selectedId:null,centreId:'AC02',metric:'travel_time_min',scope:OUTER,
   showValues:true,showCentres:true,explorerTab:'journey',statsTab:'overview',compareOrigin:'',routeList:false,
   actualRoute:true,directRoute:false,filters:{origin:'',thresholds:{},match:'all'},
   filtersOpen:false,legendOpen:false,routeDetailsOpen:false,mapExpanded:false,
-  dataset:'v2_1',scenario:'weekday_am',compareScenario:'weekday_interpeak',matrixMode:'absolute',centreDirection:'outbound',sampleKey:null,spatialKey:null,presentation:false,planningProfile:'connectivity_burden'};
+  dataset:'v2_1',scenario:'weekday_am',compareScenario:'weekday_interpeak',matrixMode:'absolute',centreDirection:'outbound',sampleKey:null,spatialKey:null,planningProfile:'connectivity_burden',planningRoute:null,spatialMetric:'travel_time_min'};
 let study,rows=[],centres=[],byId=new Map(),byPair=new Map(),legsByRoute=new Map(),profiles=[];
 let baseline,v2,routeData,planningData,spatialData,loadSequence=0;
 const scenarioCache=new Map();
@@ -26,23 +27,10 @@ const cache=new Map();
 async function asset(path){if(!cache.has(path))cache.set(path,fetch(`${import.meta.env.BASE_URL}data/v2_1/${path}`).then(r=>{if(!r.ok)throw Error(`Data unavailable: ${path}`);return r.json();}).catch(e=>{cache.delete(path);throw e;}));return cache.get(path);}
 function controls(){
   const s=v2.scenarios.find(s=>s.id===state.scenario);
-  $('dataset-controls').innerHTML=selectControl('dataset-select',[['v2_1','V2.1 — 4 periods'],['v1','V1 — 1 departure']],state.dataset,'Study version')+
-    (state.dataset==='v2_1'?selectControl('scenario-select',v2.scenarios.map(s=>[s.id,s.label]),state.scenario,'Departure period'):'')+
-    `<p>${state.dataset==='v2_1'?`${s.dates[0]==='2026-10-13'?'13':'17'} October 2026 · ${s.times.join(', ')}`:'13 October 2026 · 08:00'}<br>Australia/Melbourne · Historical timetable</p>`;
+  $('dataset-controls').innerHTML=selectControl('scenario-select',v2.scenarios.map(s=>[s.id,s.label]),state.scenario,'Departure period')+
+    `<p>${s.dates[0]==='2026-10-13'?'13':'17'} October 2026 · ${s.times.join(', ')}<br>Australia/Melbourne · Scheduled, not live</p>`;
 }
-function urlState(){const p=new URLSearchParams({dataset:state.dataset,scenario:state.scenario});if(state.selectedId)p.set('route',state.selectedId);if(state.sampleKey)p.set('sample',state.sampleKey);if(state.page==='spatial'&&state.spatialKey)p.set('spatial',state.spatialKey);if(state.presentation)p.set('present','1');if(state.page==='planning')p.set('profile',state.planningProfile);history.replaceState(null,'',`#${state.page}?${p}`);}
-function applyPresentationState(){
-  document.body.classList.toggle('presentation-mode',state.presentation);
-  const toggle=$('presentation-toggle');
-  toggle.textContent=state.presentation?'Exit presentation':'Present';
-  toggle.setAttribute('aria-pressed',String(state.presentation));
-  requestAnimationFrame(resizeMap);
-}
-async function setPresentation(enabled,requestFullscreen=false){
-  state.presentation=enabled;applyPresentationState();urlState();render();
-  if(requestFullscreen&&enabled&&!document.fullscreenElement){try{await document.documentElement.requestFullscreen();}catch{}}
-  if(!enabled&&document.fullscreenElement){try{await document.exitFullscreen();}catch{}}
-}
+function urlState(push=false){const p=new URLSearchParams({scenario:state.scenario});if(state.selectedId)p.set('route',state.selectedId);if(state.sampleKey)p.set('sample',state.sampleKey);if(state.page==='spatial'&&state.spatialKey)p.set('spatial',state.spatialKey);if(state.page==='planning')p.set('profile',state.planningProfile);const hash=`#${state.page}?${p}`;if(location.hash!==hash)history[push?'pushState':'replaceState'](null,'',hash);}
 async function activate(){
   const sequence=++loadSequence;
   const focus=focusToken();$('content').setAttribute('aria-busy','true');
@@ -97,7 +85,7 @@ function render(fit=false) {
   $('page-title').textContent=state.page==='explorer'?routeName(byId.get(state.selectedId)||rows[0]):title;
   $('page-subtitle').textContent=subtitle;
   $('dashboard-title').hidden=state.page!=='dashboard';
-  if(state.dataset==='v2_1')$('page-subtitle').textContent=state.page==='compare'?'Matched directed pairs across scheduled periods.':'Historical multi-period scheduled connectivity · V2.1';
+  if(state.dataset==='v2_1')$('page-subtitle').textContent=state.page==='compare'?'Matched directed pairs across scheduled periods.':'Scheduled cross-suburban connectivity across four periods.';
   if(state.dataset==='v2_1'&&state.page==='compare')$('page-title').textContent='Scenario comparison';
   if(state.page==='spatial')$('page-subtitle').textContent='One directed Melton → Ringwood research-proxy pilot · experimental';
   $('content').innerHTML=(state.dataset==='v2_1'?renderV2:renderPage)[state.page]({state,rows,centres,byId,byPair,legsByRoute,profiles,study,v2,routeData,planning:planningData,spatial:spatialData});
@@ -107,6 +95,10 @@ function render(fit=false) {
   document.querySelector('.map-stage')?.classList.toggle('expanded',state.mapExpanded);
   positionMapLegend();
   const slot=$('map-slot');
+  if(state.page==='spatial'&&spatialData){
+    const selected=spatialData.samples.find(s=>s.request_key===state.spatialKey&&s.scenario_id===state.scenario)||spatialData.samples.find(s=>s.scenario_id===state.scenario);
+    if($('spatial-map')&&selected)mountSpatialMap($('spatial-map'),spatialData,selected);
+  }
   if(slot){
     mountMap(slot);
     const route=byId.get(state.selectedId);
@@ -120,8 +112,8 @@ function render(fit=false) {
   }
   restoreFocus(focus);
 }
-function navigate(page){if(!(state.dataset==='v2_1'?renderV2:renderPage)[page])return;if(page!=='map')state.mapExpanded=false;state.page=page;if(page==='explorer'&&!byId.has(state.selectedId))state.selectedId='OD_AC02_AC06';state.routeList=false;$('sidebar').classList.remove('open');$('menu-toggle').setAttribute('aria-expanded','false');activate().then(()=>$('content').focus({preventScroll:true}));}
-function selectRoute(id,page='explorer'){if(!byId.has(id))return;state.selectedId=id;state.centreId=byId.get(id).origin_id;state.routeDetailsOpen=false;if(page==='explorer')state.actualRoute=true;if(page==='map'&&state.page==='map'){urlState();render();return;}navigate(page);}
+function navigate(page){if(!(state.dataset==='v2_1'?renderV2:renderPage)[page])return;if(page!=='map')state.mapExpanded=false;state.page=page;if(page==='explorer'&&!byId.has(state.selectedId))state.selectedId='OD_AC02_AC06';state.routeList=false;$('sidebar').classList.remove('open');$('menu-toggle').setAttribute('aria-expanded','false');urlState(true);activate().then(()=>$('content').focus({preventScroll:true}));}
+function selectRoute(id,page='explorer'){if(!byId.has(id))return;state.selectedId=id;state.centreId=byId.get(id).origin_id;state.routeDetailsOpen=false;if(page==='explorer')state.actualRoute=true;if(page==='map'&&state.page==='map'){urlState(true);render();return;}navigate(page);}
 function setMapExpanded(expanded){
   const stage=document.querySelector('.map-stage');if(!stage)return;
   state.mapExpanded=expanded;stage.classList.toggle('expanded',expanded);
@@ -148,15 +140,15 @@ function closeSearch(){ $('search-results').hidden=true; $('global-search').setA
 document.addEventListener('click',event=>{
   const target=event.target.closest('button,[data-route]');if(!target)return;
   if(target.dataset.scenario){state.scenario=target.dataset.scenario;activate();return;}
-  if(target.dataset.sample){state.sampleKey=target.dataset.sample;activate();return;}
-  if(target.dataset.spatialKey){state.spatialKey=target.dataset.spatialKey;urlState();render();return;}
+  if(target.dataset.sample){state.sampleKey=target.dataset.sample;urlState(true);activate();return;}
+  if(target.dataset.spatialKey){state.spatialKey=target.dataset.spatialKey;urlState(true);render();return;}
+  if(target.dataset.planningRoute){state.planningRoute=target.dataset.planningRoute;render();return;}
   if(target.dataset.page){navigate(target.dataset.page);return;}
   if(target.dataset.route){closeSearch();$('global-search').value='';selectRoute(target.dataset.route,target.dataset.mapSelect?'map':'explorer');return;}
   if(target.dataset.centre){state.centreId=target.dataset.centre;closeSearch();$('global-search').value='';navigate('centres');return;}
   if(target.dataset.explorerTab){state.explorerTab=target.dataset.explorerTab;render();return;}
   if(target.dataset.statsTab){state.statsTab=target.dataset.statsTab;render();return;}
   switch(target.id){
-    case 'presentation-toggle':setPresentation(!state.presentation,true);break;
     case 'menu-toggle':{const open=$('sidebar').classList.toggle('open');target.setAttribute('aria-expanded',String(open));break;}
     case 'reverse-route':{const reverse=reverseRoute(byId.get(state.selectedId),byPair);if(reverse)selectRoute(reverse.route_id);break;}
     case 'previous-route':case 'next-route':{const routes=orderedRoutes(rows),index=routes.findIndex(r=>r.route_id===state.selectedId);selectRoute(routes[(index+(target.id==='next-route'?1:-1)+routes.length)%routes.length].route_id);break;}
@@ -177,9 +169,10 @@ document.addEventListener('click',event=>{
 document.addEventListener('change',event=>{
   const input=event.target;
   switch(input.id){
-    case 'dataset-select':state.dataset=input.value;if(state.dataset==='v1'&&['planning','spatial'].includes(state.page))state.page='dashboard';activate();break;
-    case 'planning-profile':state.planningProfile=input.value;urlState();render();break;
-    case 'scenario-select':state.scenario=input.value;state.sampleKey=null;activate();break;
+    case 'spatial-metric':state.spatialMetric=input.value;render();break;
+    case 'planning-profile':state.planningProfile=input.value;urlState(true);render();break;
+    case 'planning-sort':state.planningSort=input.value;render();break;
+    case 'scenario-select':state.scenario=input.value;state.sampleKey=null;state.spatialKey=null;urlState(true);activate();break;
     case 'comparison-scenario':state.compareScenario=input.value;render();break;
     case 'matrix-mode':state.matrixMode=input.value;render();break;
     case 'centre-direction':state.centreDirection=input.value;render();break;
@@ -215,7 +208,7 @@ $('search-results').addEventListener('keydown',event=>{
 $('global-search').addEventListener('input',search);
 $('global-search').addEventListener('keydown',event=>{if(event.key==='ArrowDown'){$('search-results').querySelector('button')?.focus();event.preventDefault();}if(event.key==='Enter')$('search-results').querySelector('button')?.click();});
 document.addEventListener('click',event=>{if(!event.target.closest('.search-wrap'))closeSearch();});
-function readUrl(){const [page,query]=location.hash.slice(1).split('?'),p=new URLSearchParams(query||location.search);state.dataset=p.get('dataset')==='v1'?'v1':'v2_1';state.page=(state.dataset==='v2_1'?renderV2:renderPage)[page]?page:'dashboard';if(v2.scenarios.some(s=>s.id===p.get('scenario')))state.scenario=p.get('scenario');if(planningProfiles.some(([key])=>key===p.get('profile')))state.planningProfile=p.get('profile');state.selectedId=p.get('route')||state.selectedId;state.sampleKey=p.get('sample');state.spatialKey=p.get('spatial');state.presentation=p.get('present')==='1';applyPresentationState();}
+function readUrl(){const [page,query]=location.hash.slice(1).split('?'),p=new URLSearchParams(query||location.search);state.dataset='v2_1';state.page=renderV2[page]?page:'dashboard';if(v2.scenarios.some(s=>s.id===p.get('scenario')))state.scenario=p.get('scenario');if(planningProfiles.some(([key])=>key===p.get('profile')))state.planningProfile=p.get('profile');state.selectedId=p.get('route')||state.selectedId;state.sampleKey=p.get('sample');state.spatialKey=p.get('spatial');}
 window.addEventListener('hashchange',()=>{readUrl();activate();});
 mobileMapQuery.addEventListener('change',event=>{if(!event.matches&&state.mapExpanded)setMapExpanded(false);else positionMapLegend();});
 setMapSelection(ids=>{

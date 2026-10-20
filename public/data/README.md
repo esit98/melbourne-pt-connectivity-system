@@ -1,6 +1,6 @@
 # Public data notices and route-geometry access
 
-This directory contains a frozen research scenario for 13 October 2026 at 08:00 Australia/Melbourne. It is not a current journey-planning feed. The original study values and coordinates are unchanged.
+This directory contains saved scheduled research outputs, not a current journey-planning feed. The main analysis under `v2_1/` covers 100 directed pairs, four scenarios and 16 requested departures per pair on 13 and 17 October 2026 (Australia/Melbourne). The `experimental/` files add separate planning context and one Melton → Ringwood access-point experiment. The original single-departure `study.json` and its route geometries are preserved without changing their values or coordinates; the component details below describe that preserved dataset.
 
 ## Components and terms
 

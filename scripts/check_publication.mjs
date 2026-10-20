@@ -27,7 +27,7 @@ assert.ok(names.includes('licenses/OPENLAYERS-BSD-2-Clause.txt'));
 assert.ok(names.includes('licenses/THIRD_PARTY_NOTICES.txt'));
 assert.ok(names.every(name => !/(^|\/)(\.env|\.git|node_modules)(\/|$)/.test(name)));
 const html = readFileSync(new URL('../dist/index.html', import.meta.url), 'utf8');
-assert.match(html, /\/melbourne-pt-connectivity-dashboard\/assets\//);
+assert.match(html, /\/melbourne-pt-connectivity-system\/assets\//);
 const scripts = files.filter(path => path.endsWith('.js')).map(path => readFileSync(path, 'utf8')).join('\n');
 assert.doesNotMatch(scripts, /\/geoserver\/geom30012|127\.0\.0\.1|localhost|VITE_CARTO_BASEMAP_KEY/);
 assert.match(scripts, /https:\/\/basemaps\.cartocdn\.com\/rastertiles\/light_all\//);

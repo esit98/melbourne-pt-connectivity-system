@@ -1,0 +1,7 @@
+# Experimental data components
+
+`planning_context_v2.json` combines frozen scheduled connectivity summaries with ABS Census 2021 General Community Profile G01 and G34, Working Population Profile W01B, SEIFA 2021 Table 1 and ASGS 2021 SA2 boundaries. The source hashes and containing-SA2 method are recorded in the JSON and the research methodology. ABS material is credited to the Australian Bureau of Statistics under its applicable attribution terms. SA2 residents, workplace employment, zero-vehicle households and IRSD are area-level context, not observed OD passenger demand or activity-centre catchments. The six displayed ranking profiles use the stored formulas and scenario-specific normalisation.
+
+`v2_2_spatial_pilot.json` contains 96 saved OpenTripPlanner requests across six Melton → Ringwood GTFS stop-proxy point pairs and four scenarios. The five points are research modelling proxies, not verified pedestrian entrances. Transport Victoria GTFS Schedule (Department of Transport and Planning) supplies timetable and stop information, under CC BY 4.0. Saved walking-network-derived route geometry is attributed to © OpenStreetMap contributors under ODbL 1.0. Its coordinates are retained from the validated pilot; the website does not create new routes or median geometries.
+
+The CARTO Light basemap is a separate external tile service with visible © OpenStreetMap contributors and © CARTO attribution. These research components do not imply ABS, Transport Victoria, OpenStreetMap or CARTO endorsement.

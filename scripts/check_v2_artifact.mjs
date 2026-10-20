@@ -14,9 +14,13 @@ for(const [file,hash] of Object.entries(manifest.files)){
 assert.ok(fs.existsSync(new URL('../V2_1_NOTICES.md',root)));
 // The Pages upload is exactly the static application and reviewed public data.
 const dist=new URL('../dist/',import.meta.url);
-const expected=new Set(['index.html','data/README.md','data/study.json','data/manifest.json','data/route_geometries.geojson','data/V2_1_NOTICES.md','licenses/OPENLAYERS-BSD-2-Clause.txt','licenses/THIRD_PARTY_NOTICES.txt','data/v2_1/manifest.json',...Object.keys(manifest.files).map(f=>'data/v2_1/'+f)]);
+const expected=new Set(['index.html','data/README.md','data/study.json','data/manifest.json','data/route_geometries.geojson','data/V2_1_NOTICES.md','data/experimental/README.md','data/experimental/planning_context_v2.json','data/experimental/v2_2_spatial_pilot.json','licenses/OPENLAYERS-BSD-2-Clause.txt','licenses/THIRD_PARTY_NOTICES.txt','data/v2_1/manifest.json',...Object.keys(manifest.files).map(f=>'data/v2_1/'+f)]);
 const html=fs.readFileSync(new URL('index.html',dist),'utf8');
-for(const match of html.matchAll(/(?:src|href)="\/melbourne-pt-connectivity-dashboard\/(assets\/[^"?]+\.(?:js|css))"/g))expected.add(match[1]);
+for(const match of html.matchAll(/(?:src|href)="\/melbourne-pt-connectivity-system\/(assets\/[^"?]+\.(?:js|css))"/g))expected.add(match[1]);
+for(const file of ['data/experimental/planning_context_v2.json','data/experimental/v2_2_spatial_pilot.json']){
+  const parsed=JSON.parse(fs.readFileSync(new URL(file,dist),'utf8'));
+  assert.equal(file.includes('planning')?parsed.rows.length:parsed.samples.length,file.includes('planning')?360:96);
+}
 const actual=fs.readdirSync(dist,{recursive:true}).map(f=>String(f).replaceAll('\\','/')).filter(f=>fs.statSync(new URL(f,dist)).isFile());
 assert.deepEqual([...actual].sort(),[...expected].sort(),'Unexpected or missing file in Pages artifact');
 console.log(`Exact Pages upload allowlist: ${actual.length} files; no extra documentation, configuration or QA output.`);

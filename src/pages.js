@@ -11,8 +11,8 @@ export const pageInfo = {
   statistics: ['Statistics', 'Explore descriptive patterns across the scheduled journey network.'],
   compare: ['Outer vs CBD comparison', 'Compare cross-suburban journeys with CBD-oriented journeys.'],
   methodology: ['Methods & Data', 'How the analysis was produced and what the results represent.'],
-  planning: ['Planning prioritisation', 'Explore separate connectivity, population and equity context rankings.'],
-  spatial: ['Spatial pilot', 'Inspect the local V2.2 Melton to Ringwood research-proxy experiment.'],
+  planning: ['Planning Context', 'Explore separate connectivity, population and equity context rankings.'],
+  spatial: ['Spatial Analysis', 'Inspect the Melton to Ringwood research-proxy experiment.'],
 };
 export const metricSelect = state => selectControl('metric-select', METRIC_KEYS.filter(k=>state.dataset==='v2_1'?k!=='minutes_per_direct_km':!['request_to_arrival_min','pre_departure_wait_min'].includes(k)).map(k=>[k,labels[k]]),state.metric,'Metric');
 export const scopeSelect = state => selectControl('scope-select',[[OUTER,'Outer → Outer'],[CBD,'Outer → CBD'],['compare','Compare']].filter(x=>state.dataset!=='v2_1'||x[0]!=='compare'),state.scope,'Analysis type');

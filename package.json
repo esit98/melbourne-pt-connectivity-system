@@ -1,0 +1,17 @@
+{
+  "name": "geom30012-connectivity-map",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:public": "node scripts/build_public.mjs",
+    "preview": "vite preview",
+    "test": "node --test tests/*.test.js",
+    "verify:geometry": "node scripts/export_route_geometries.mjs --check",
+    "verify:notices": "node scripts/build_third_party_notices.mjs --check"
+  },
+  "dependencies": { "ol": "10.10.0" },
+  "devDependencies": { "vite": "8.3.2" }
+}

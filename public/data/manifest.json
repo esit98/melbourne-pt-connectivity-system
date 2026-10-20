@@ -1,0 +1,25 @@
+{
+  "scenario": "2026-10-13T08:00:00+11:00",
+  "timezone": "Australia/Melbourne",
+  "route_counts": {
+    "outer_to_outer": 90,
+    "outer_to_cbd_benchmark": 10,
+    "total": 100
+  },
+  "centre_counts": {
+    "outer": 10,
+    "cbd_benchmark": 1
+  },
+  "leg_count": 533,
+  "route_geometry_count": 100,
+  "source_sha256": {
+    "datasets/output/connectivity_results_100.csv": "a864401b1436dcb2426b11cd99b278b4e8b91465ddfb9fd046bc337638d70c89",
+    "datasets/output/final_itinerary_geometries.geojson": "bfed3df9769077c028d0feafa2fb47d05d41188f93322037913e8880c787eb23",
+    "datasets/output/outer_to_outer_legs.json": "fe90c28a2cd1ac9118393ea994f58eb695f6ec4aa068d42328d97156f661d343",
+    "datasets/output/outer_to_cbd_benchmark_legs.json": "585b15fb725285fbd041f5487453c258defba92db9258dd2adf37aec5a914072",
+    "datasets/processed/selected_outer_activity_centres.geojson": "a5ccd1aa1627e25cc70b71ef296945c701225d78c860fcd7e031b6dacdc8529c",
+    "datasets/processed/benchmark_cbd.csv": "b782d6a9b4c77a3c64766b71fe6fb0a0914e2680a8fa9fca3eb1a419b173aec8"
+  },
+  "study_sha256": "47affdf68624f267babadbf8b0519bacfe810d86b0929bdb899f4402371ec8bf",
+  "study_bytes": 2188351
+}

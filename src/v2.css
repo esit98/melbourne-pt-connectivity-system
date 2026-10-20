@@ -1,0 +1,42 @@
+.dataset-controls{margin:0 28px 20px;padding:16px 20px;background:#edf3fa;border:1px solid #d8e2f0;border-radius:12px;display:grid;grid-template-columns:minmax(200px,1fr) minmax(180px,1fr) minmax(210px,1.2fr);gap:16px;align-items:center}
+.dataset-controls p{font-size:12px;line-height:1.65;color:#455b75;margin:0}.dataset-controls select{width:100%;min-height:44px}.v2-context{color:#52647c;font-size:13px;line-height:1.6;margin:0 0 16px}.v2-table-scroll{overflow:auto;max-width:100%;border-radius:8px}.v2-table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.55}.v2-table th{text-align:left;color:#415671;background:#f1f5fa;font-size:12px}.v2-table th,.v2-table td{padding:12px;border-bottom:1px solid #e4eaf1;vertical-align:top}.v2-table td small{display:block;color:#52647c}.v2-table td button{text-align:left;min-height:44px}.v2-table code{word-break:break-all;font-size:11px}.v2-two,.v2-explorer-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.v2-explorer-grid{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}.v2-map-card #map-slot{height:480px;min-height:360px}.v2-map-card .map-shell{height:100%}.v2-map-card{min-width:0}.v2-facts{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;font-size:14px}.v2-facts dt{color:#52647c}.v2-facts dd{margin:0;font-weight:600}.v2-warning{background:#fff3dc;color:#6c4912;border-left:3px solid #d69820;padding:12px;font-size:13px;line-height:1.6}.sample-buttons{display:flex;gap:10px;flex-wrap:wrap}.sample-buttons button{min-height:44px}.v2-map-card .controls-row{margin-top:12px}.v2-table th{white-space:nowrap}.v2-table td{min-width:90px}.v2-table td:first-child{min-width:175px}#map-warning{position:absolute;top:44px;left:48px;right:16px;z-index:5;background:#fff4dfeF;padding:8px 12px;font-size:12px;border-radius:6px;pointer-events:none;color:#65470d}.v2-table-scroll:focus-visible,.matrix-scroll:focus-visible{outline:3px solid #075cf4;outline-offset:3px}.od-matrix button{min-height:44px}#content>.card{margin-bottom:20px}details summary{cursor:pointer;min-height:44px;padding:10px 0}#content code{overflow-wrap:anywhere}#content .controls-row{flex-wrap:wrap;margin-bottom:14px}#content .controls-row select{max-width:100%;min-height:44px}.card p{line-height:1.65}.v2-two .card{min-width:0}.v2-table-scroll table{min-width:660px}.dataset-controls label{min-width:0}
+@media(max-width:1100px){.dataset-controls{grid-template-columns:1fr 1fr}.dataset-controls p{grid-column:1/-1}.v2-explorer-grid{grid-template-columns:1fr}.v2-map-card #map-slot{height:440px}}
+@media(max-width:640px){.dataset-controls{margin:0 14px 16px;padding:14px;gap:12px;grid-template-columns:1fr}.dataset-controls p{grid-column:auto}.v2-two{grid-template-columns:1fr}.v2-facts{font-size:13px}.sample-buttons{display:grid;grid-template-columns:1fr 1fr}.sample-buttons button{font-size:12px}.v2-map-card #map-slot{height:380px}.v2-table-scroll{margin-top:12px}.controls-row>.field{width:100%}.controls-row select{width:100%}.v2-explorer-grid{gap:14px}#map-warning{left:42px;right:8px;font-size:11px}.dataset-controls .field span{font-size:12px}.v2-context{font-size:12px}}
+
+.v2-map-card #map-slot{position:relative;inset:auto;border-radius:6px;overflow:hidden}.v2-map-card{position:relative}.dataset-controls{margin-left:0;margin-right:0}
+body[data-dataset="v2_1"] .kpi-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:900px){body[data-dataset="v2_1"] .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+body[data-dataset="v2_1"] .kpi-grid>.metric-card:last-child{grid-column:auto}
+body[data-dataset="v2_1"] .od-matrix td button{background:transparent;border:0;border-radius:0;width:100%;color:#102232}
+body[data-dataset="v2_1"] .od-matrix td button:hover{box-shadow:inset 0 0 0 2px #075cf4}
+.v2-table-scroll table:not(:has(th:nth-child(3))){min-width:0}
+.v2-table-scroll table:not(:has(th:nth-child(3))) :is(th,td){min-width:0;white-space:normal}
+@media(max-width:640px){.v2-table-scroll:has(th:nth-child(3))::after{content:'Scroll horizontally for more columns';display:block;font-size:11px;color:#52647c;padding:10px 0}}
+
+.map-method-note{font-size:12px;line-height:1.6;color:#455b75;margin:0 0 12px}
+.map-method-note summary{padding:8px 0;min-height:44px;box-sizing:border-box}
+.map-method-note summary span{font-weight:600;color:#0755cf;margin-left:8px}
+.map-method-note p{margin:0 0 12px}.map-method-note .v2-context{font-size:12px}
+.rank,.section-number,.map-selection span{color:#52647c}
+#notice:not([hidden]){position:fixed;bottom:16px;right:16px;z-index:150;background:#fff;border:1px solid #cad8ea;border-radius:8px;padding:12px 16px;max-width:calc(100vw - 32px);font-size:13px;box-shadow:0 4px 16px #10223220}
+.ol-control button{min-width:44px;min-height:44px}
+:is(button,a,input,select,summary):focus-visible{outline:3px solid #075cf4;outline-offset:3px}
+@media(max-width:640px){
+  .dataset-controls{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:8px;padding:10px;margin-bottom:8px}
+  .dataset-controls .field{min-width:0}.dataset-controls select{font-size:12px;padding-left:6px;padding-right:2px}
+  .dataset-controls p{grid-column:1/-1;font-size:11px;line-height:1.5}
+  .map-method-note{margin-bottom:8px}.map-method-note summary span{display:block;margin-left:15px}
+}
+@media(max-width:360px){.dataset-controls{grid-template-columns:1fr}.dataset-controls select{font-size:13px}}
+/* The V2.2 experiment is an isolated, single-OD view of saved pilot evidence. */
+.spatial-intro{padding:1.2rem 1.5rem;margin-bottom:1rem;background:#e6f1f2;border-left:5px solid #327584;border-radius:8px;line-height:1.55}
+.spatial-intro strong{font-size:1.12rem;color:#163e4c}
+.spatial-intro p{margin:.45rem 0 0}
+.spatial-pairs{display:flex;flex-wrap:wrap;gap:.5rem;margin:.8rem 0}
+.spatial-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,1fr);gap:1rem;margin:1rem 0}
+.spatial-layout .card{min-width:0;margin:0}
+.spatial-route{display:block;width:100%;height:auto;max-height:500px;border:1px solid #cfdae0;border-radius:6px}
+.spatial-route text{font:600 12px sans-serif;fill:#142b3c;paint-order:stroke;stroke:#fff;stroke-width:3px}
+.spatial-legend{display:flex;gap:.7rem;flex-wrap:wrap;font-size:.82rem;color:#445566}
+.spatial-legend span:nth-child(1){color:#2779b7}.spatial-legend span:nth-child(2){color:#7a4cab}.spatial-legend span:nth-child(3){color:#d37c29}
+@media(max-width:900px){.spatial-layout{grid-template-columns:1fr}}
